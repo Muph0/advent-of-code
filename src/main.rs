@@ -15,6 +15,7 @@ fn main() {
         //
         Box::new(day01::Day01),
         Box::new(day02::Day02),
+        Box::new(day03::Day03),
     ];
 
     for sol in solutions {
@@ -36,18 +37,24 @@ fn main() {
             }
         };
 
+        let msg2 = msg.clone();
         let builder = thread::Builder::new().name(input_file.clone());
         let thread = builder
             .spawn(move || {
-                fs::write(format!("src/day{day:02}.out1.txt"), sol.part_one(&input)).unwrap();
-                fs::write(format!("src/day{day:02}.out2.txt"), sol.part_two(&input)).unwrap();
+                let o1 = sol.part_one(&input);
+                println!("{} part one = {}", &msg2, &o1);
+                fs::write(format!("src/day{day:02}.out1.txt"), o1).unwrap();
+
+                let o2 = sol.part_two(&input);
+                println!("{} part two = {}", &msg2, &o2);
+                fs::write(format!("src/day{day:02}.out2.txt"), o2).unwrap();
             })
             .unwrap();
 
         let result = thread.join();
         match result {
             Ok(_) => println!("{} completed.", &msg),
-            Err(e) => println!("{} panicked with {e:?}.", &msg),
+            Err(_) => println!("{} panicked.", &msg),
         }
     }
 }
