@@ -25,6 +25,8 @@ impl Solution for Day03 {
     }
 
     fn part_two(&self, input: &str) -> String {
+        return part_two_2(input).to_string();
+
         let mul = Regex::new(r"mul\((\d+),(\d+)\)|do\(\)|don't\(\)").unwrap();
 
         let mut sum = 0;
@@ -50,4 +52,68 @@ impl Solution for Day03 {
 
         sum.to_string()
     }
+}
+
+fn part_two_2(input: &str) -> i32 {
+    let mut i = 0;
+    let chars: Vec<_> = input.chars().collect();
+
+    let mut sum = 0;
+    let mut enable = true;
+    loop {
+        match &chars[i..] {
+            ['m', 'u', 'l', '(', ..] if enable => {
+                i += 4;
+                match parse_mul(&mut i, &chars) {
+                    Some(d) => sum += d,
+                    None => (),
+                }
+            }
+            ['d', 'o', '(', ')', ..] => {
+                i += 4;
+                enable = true;
+            }
+            ['d', 'o', 'n', '\'', 't', '(', ')', ..] => {
+                i += 7;
+                enable = false;
+            }
+            [_, ..] => i += 1,
+            [] => break,
+        }
+    }
+    sum
+}
+
+fn parse_mul(j: &mut usize, chars: &Vec<char>) -> Option<i32> {
+    let mut i = *j;
+    let n1 = parse_int(&mut i, chars)?;
+    parse_exact(&mut i, chars, ",")?;
+    let n2 = parse_int(&mut i, chars)?;
+    parse_exact(&mut i, chars, ")")?;
+    *j = i;
+    Some(n1 * n2)
+}
+
+fn parse_int(j: &mut usize, chars: &Vec<char>) -> Option<i32> {
+    let mut n = 0;
+    let mut once = false;
+    while let Some(d) = char::to_digit(chars[*j], 10) {
+        once = true;
+        n = n * 10 + d as i32;
+        *j += 1;
+    }
+    match once {
+        true => Some(n),
+        false => None,
+    }
+}
+
+fn parse_exact(j: &mut usize, chars: &Vec<char>, expect: &str) -> Option<()> {
+    for (i, c) in expect.chars().enumerate() {
+        if chars[i + *j] != c {
+            return None;
+        }
+    }
+    *j += expect.len();
+    Some(())
 }
