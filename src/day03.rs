@@ -2,11 +2,15 @@ use regex::Regex;
 
 use crate::Solution;
 
+#[derive(Clone, Copy)]
 pub struct Day03;
 
 impl Solution for Day03 {
     fn day_number(&self) -> i32 {
         3
+    }
+    fn clone_dyn(&self) -> Box<dyn Solution> {
+        Box::new(*self)
     }
 
     fn part_one(&self, input: &str) -> String {

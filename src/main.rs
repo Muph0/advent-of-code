@@ -10,6 +10,7 @@ pub trait Solution: Send {
     fn day_number(&self) -> i32;
     fn part_one(&self, input: &str) -> String;
     fn part_two(&self, input: &str) -> String;
+    fn clone_dyn(&self) -> Box<dyn Solution>;
 }
 
 fn main() {
@@ -26,7 +27,7 @@ fn main() {
 
         let mut msg = String::new();
         let input_file = format!("src/day{day:02}.txt");
-        msg.write_fmt(format_args!("Task \"{input_file}\""))
+        msg.write_fmt(format_args!("Task {input_file}"))
             .unwrap();
 
         let input = match fs::read_to_string(&input_file) {
@@ -39,25 +40,33 @@ fn main() {
                 continue;
             }
         };
+        let input_ref: &'static str = input.leak();
 
-        let msg2 = msg.clone();
-        let builder = thread::Builder::new().name(input_file.clone());
-        let thread = builder
-            .spawn(move || {
-                let o1 = sol.part_one(&input);
-                println!("{} part one = {}", &msg2, &o1);
-                fs::write(format!("src/day{day:02}.out1.txt"), o1).unwrap();
+        let part1_name = format!("{}, part one", &input_file);
+        let part1_sol = sol.clone_dyn();
+        run_guarded(part1_name.clone(), move || {
+            let result = part1_sol.part_one(input_ref);
+            println!("     {part1_name} = {}", &result);
+        });
 
-                let o2 = sol.part_two(&input);
-                println!("{} part two = {}", &msg2, &o2);
-                fs::write(format!("src/day{day:02}.out2.txt"), o2).unwrap();
-            })
-            .unwrap();
+        let part2_name = format!("{}, part two", &input_file);
+        run_guarded(part2_name.clone(), move || {
+            let result = sol.part_two(input_ref);
+            println!("     {part2_name} = {}", &result);
+        });
+    }
+}
 
-        let result = thread.join();
-        match result {
-            Ok(_) => println!("{} completed.", &msg),
-            Err(_) => println!("{} panicked.", &msg),
-        }
+fn run_guarded<F>(name: String, f: F)
+where
+    F: Fn() + Send + 'static,
+{
+    let builder = thread::Builder::new().name(name.clone());
+    let thread = builder.spawn(move || f()).unwrap();
+
+    let result = thread.join();
+    match result {
+        Ok(_) => (),
+        Err(_) => println!("{} panicked.", &name),
     }
 }

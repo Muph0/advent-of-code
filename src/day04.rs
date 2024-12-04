@@ -2,7 +2,27 @@ use std::ops::{Index, IndexMut};
 
 use crate::{vec::Vec2i, Solution};
 
+#[derive(Clone, Copy)]
 pub struct Day04;
+
+impl Solution for Day04 {
+    fn day_number(&self) -> i32 {
+        4
+    }
+    fn clone_dyn(&self) -> Box<dyn Solution> {
+        Box::new(*self)
+    }
+
+    fn part_one(&self, input: &str) -> String {
+        let board = Board::from_str(input);
+        board.word_count("XMAS").to_string()
+    }
+
+    fn part_two(&self, input: &str) -> String {
+        let board = Board::from_str(input);
+        board.x_shape_mas_count().to_string()
+    }
+}
 
 struct Board {
     width: i32,
@@ -88,22 +108,6 @@ impl Board {
             }
         }
         count
-    }
-}
-
-impl Solution for Day04 {
-    fn day_number(&self) -> i32 {
-        4
-    }
-
-    fn part_one(&self, input: &str) -> String {
-        let board = Board::from_str(input);
-        board.word_count("XMAS").to_string()
-    }
-
-    fn part_two(&self, input: &str) -> String {
-        let board = Board::from_str(input);
-        board.x_shape_mas_count().to_string()
     }
 }
 

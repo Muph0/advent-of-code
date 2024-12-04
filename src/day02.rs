@@ -1,6 +1,6 @@
 use crate::Solution;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Day02;
 
 fn read_reports(input: &str) -> Vec<Vec<i32>> {
@@ -30,6 +30,9 @@ fn is_safe(report: &Vec<i32>) -> bool {
 impl Solution for Day02 {
     fn day_number(&self) -> i32 {
         2
+    }
+    fn clone_dyn(&self) -> Box<dyn Solution> {
+        Box::new(*self)
     }
 
     fn part_one(&self, input: &str) -> String {

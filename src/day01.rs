@@ -1,6 +1,6 @@
 use crate::Solution;
 
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Day01;
 
 fn read_columns(input: &str) -> (Vec<i32>, Vec<i32>) {
@@ -24,6 +24,9 @@ fn read_columns(input: &str) -> (Vec<i32>, Vec<i32>) {
 impl Solution for Day01 {
     fn day_number(&self) -> i32 {
         1
+    }
+    fn clone_dyn(&self) -> Box<dyn Solution> {
+        Box::new(*self)
     }
     fn part_one(&self, input: &str) -> String {
         let (mut left, mut right) = read_columns(input);
