@@ -24,9 +24,8 @@ impl Solution for Day03 {
         sum.to_string()
     }
 
+    #[allow(unreachable_code)]
     fn part_two(&self, input: &str) -> String {
-        return part_two_2(input).to_string();
-
         let mul = Regex::new(r"mul\((\d+),(\d+)\)|do\(\)|don't\(\)").unwrap();
 
         let mut sum = 0;
@@ -49,6 +48,9 @@ impl Solution for Day03 {
                 _ => (),
             }
         }
+
+        let sum2 = part_two_2(input);
+        assert_eq!(sum, sum2);
 
         sum.to_string()
     }
