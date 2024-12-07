@@ -9,7 +9,7 @@ use std::{
 
 use multimap::MultiMap;
 
-use crate::{utils::*, vec::Vec2i, Solution};
+use crate::{utils::*, vec::Vec2i, Answer, Solution};
 
 #[derive(Clone, Copy)]
 pub struct Day05;
@@ -59,7 +59,7 @@ impl Solution for Day05 {
         Box::new(*self)
     }
 
-    fn part_one(&self, input: &str) -> String {
+    fn part_one(&self, input: &str) -> Answer {
         let [order_str, prints] = input.split("\n\n").destruct();
         let order = Order::from_str(order_str);
 
@@ -78,10 +78,10 @@ impl Solution for Day05 {
             sum += list[list.len() / 2];
         }
 
-        sum.to_string()
+        sum.into()
     }
 
-    fn part_two(&self, input: &str) -> String {
+    fn part_two(&self, input: &str) -> Answer {
         let [order_str, prints] = input.split("\n\n").destruct();
         let order = Order::from_str(order_str);
 
@@ -110,7 +110,7 @@ impl Solution for Day05 {
             }
         }
 
-        sum.to_string()
+        sum.into()
     }
 }
 

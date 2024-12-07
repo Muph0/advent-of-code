@@ -5,14 +5,41 @@ mod day04;
 mod day05;
 mod utils;
 mod vec;
+mod day06;
 
-use std::{fmt::Write, fs, thread};
+use std::{fmt::{Display, Write}, fs, thread};
+
+pub enum Answer {
+    Int(i64),
+}
+impl From<i64> for Answer {
+    fn from(value: i64) -> Self {
+        Self::Int(value)
+    }
+}
+impl From<i32> for Answer {
+    fn from(value: i32) -> Self {
+        Self::Int(value as _)
+    }
+}
+impl From<usize> for Answer {
+    fn from(value: usize) -> Self {
+        Self::Int(value as _)
+    }
+}
+impl Display for Answer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Answer::Int(val) => val.fmt(f),
+        }
+    }
+}
 
 pub trait Solution: Send {
     fn day_number(&self) -> i32;
-    fn part_one(&self, input: &str) -> String;
-    fn part_two(&self, input: &str) -> String;
     fn clone_dyn(&self) -> Box<dyn Solution>;
+    fn part_one(&self, input: &str) -> Answer;
+    fn part_two(&self, input: &str) -> Answer;
 }
 
 const RST: &str = "\x1b[0m";
@@ -26,7 +53,8 @@ fn main() {
         //Box::new(day02::Day02),
         //Box::new(day03::Day03),
         //Box::new(day04::Day04),
-        Box::new(day05::Day05),
+        //Box::new(day05::Day05),
+        Box::new(day06::Day06),
     ];
 
     for sol in solutions {

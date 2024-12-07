@@ -11,7 +11,7 @@
 #![allow(unused)]
 use std::ops::{Add, Div, Mul, Sub};
 
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub struct Vec2i {
     pub x: i32,
     pub y: i32,
@@ -43,16 +43,16 @@ impl Vec2i {
         self.x * other.x + self.y * other.y
     }
 
-    // Rotate 90 degrees to the left (counterclockwise)
-    pub fn left90(&self) -> Self {
+    /// Rotate 90 degrees so that (1,0) becomes (0,1)
+    pub fn rot_x2y(&self) -> Self {
         Self {
             x: -self.y,
             y: self.x,
         }
     }
 
-    // Rotate 90 degrees to the right (clockwise)
-    pub fn right90(&self) -> Self {
+    /// Rotate 90 degrees so that (0,1) becomes (1,0)
+    pub fn rot_y2x(&self) -> Self {
         Self {
             x: self.y,
             y: -self.x,

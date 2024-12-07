@@ -1,6 +1,6 @@
 use regex::Regex;
 
-use crate::Solution;
+use crate::{Answer, Solution};
 
 #[derive(Clone, Copy)]
 pub struct Day03;
@@ -13,7 +13,7 @@ impl Solution for Day03 {
         Box::new(*self)
     }
 
-    fn part_one(&self, input: &str) -> String {
+    fn part_one(&self, input: &str) -> Answer {
         let mul = Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
 
         let mut sum = 0;
@@ -25,11 +25,11 @@ impl Solution for Day03 {
             sum += a * b;
         }
 
-        sum.to_string()
+        sum.into()
     }
 
     #[allow(unreachable_code)]
-    fn part_two(&self, input: &str) -> String {
+    fn part_two(&self, input: &str) -> Answer {
         let mul = Regex::new(r"mul\((\d+),(\d+)\)|do\(\)|don't\(\)").unwrap();
 
         let mut sum = 0;
@@ -56,7 +56,7 @@ impl Solution for Day03 {
         let sum2 = part_two_2(input);
         assert_eq!(sum, sum2);
 
-        sum.to_string()
+        sum.into()
     }
 }
 

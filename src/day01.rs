@@ -1,4 +1,4 @@
-use crate::Solution;
+use crate::{Answer, Solution};
 
 #[derive(Clone, Copy)]
 pub struct Day01;
@@ -28,7 +28,7 @@ impl Solution for Day01 {
     fn clone_dyn(&self) -> Box<dyn Solution> {
         Box::new(*self)
     }
-    fn part_one(&self, input: &str) -> String {
+    fn part_one(&self, input: &str) -> Answer {
         let (mut left, mut right) = read_columns(input);
         left.sort();
         right.sort();
@@ -38,10 +38,10 @@ impl Solution for Day01 {
             sum += (l - r).abs();
         }
 
-        return sum.to_string();
+        return sum.into();
     }
 
-    fn part_two(&self, input: &str) -> String {
+    fn part_two(&self, input: &str) -> Answer {
         let (left, mut right) = read_columns(input);
         right.sort();
 
@@ -53,6 +53,6 @@ impl Solution for Day01 {
             sum += i * (upper - lower);
         }
 
-        return sum.to_string();
+        return sum.into();
     }
 }

@@ -1,6 +1,6 @@
 use std::ops::{Index, IndexMut};
 
-use crate::{vec::Vec2i, Solution};
+use crate::{vec::Vec2i, Answer, Solution};
 
 #[derive(Clone, Copy)]
 pub struct Day04;
@@ -13,14 +13,14 @@ impl Solution for Day04 {
         Box::new(*self)
     }
 
-    fn part_one(&self, input: &str) -> String {
+    fn part_one(&self, input: &str) -> Answer {
         let board = Board::from_str(input);
-        board.word_count("XMAS").to_string()
+        board.word_count("XMAS").into()
     }
 
-    fn part_two(&self, input: &str) -> String {
+    fn part_two(&self, input: &str) -> Answer {
         let board = Board::from_str(input);
-        board.x_shape_mas_count().to_string()
+        board.x_shape_mas_count().into()
     }
 }
 
@@ -92,15 +92,15 @@ impl Board {
                 if self[sq + dir] != 'M' {
                     continue;
                 }
-                dir = dir.right90();
+                dir = dir.rot_y2x();
                 if self[sq + dir] != 'M' {
                     continue;
                 }
-                dir = dir.right90();
+                dir = dir.rot_y2x();
                 if self[sq + dir] != 'S' {
                     continue;
                 }
-                dir = dir.right90();
+                dir = dir.rot_y2x();
                 if self[sq + dir] != 'S' {
                     continue;
                 }

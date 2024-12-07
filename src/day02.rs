@@ -1,4 +1,4 @@
-use crate::Solution;
+use crate::{Answer, Solution};
 
 #[derive(Clone, Copy)]
 pub struct Day02;
@@ -35,13 +35,13 @@ impl Solution for Day02 {
         Box::new(*self)
     }
 
-    fn part_one(&self, input: &str) -> String {
+    fn part_one(&self, input: &str) -> Answer {
         let reports = read_reports(input);
         let count = reports.into_iter().filter(is_safe).count();
-        count.to_string()
+        count.into()
     }
 
-    fn part_two(&self, input: &str) -> String {
+    fn part_two(&self, input: &str) -> Answer {
         let reports = read_reports(input);
         let count = reports
             .into_iter()
@@ -56,6 +56,6 @@ impl Solution for Day02 {
                 false
             })
             .count();
-        count.to_string()
+        count.into()
     }
 }
