@@ -9,7 +9,10 @@
 //
 // Cheers, ChatGPT
 #![allow(unused)]
-use std::ops::{Add, Div, Mul, Sub};
+use std::{
+    fmt,
+    ops::{Add, Div, Mul, Sub},
+};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub struct Vec2i {
@@ -155,5 +158,11 @@ impl From<(i32, i32)> for Vec2i {
             x: tuple.0,
             y: tuple.1,
         }
+    }
+}
+
+impl fmt::Display for Vec2i {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_tuple("").field(&self.x).field(&self.y).finish()
     }
 }

@@ -4,6 +4,7 @@ use std::hash::{BuildHasher, Hash};
 use std::mem::{transmute_copy, MaybeUninit};
 use std::ops::{Index, IndexMut};
 use std::slice::{Iter, IterMut};
+use std::str::FromStr;
 
 pub trait DestructIterator<T> {
     fn destruct<const N: usize>(self) -> [T; N];
@@ -161,8 +162,9 @@ impl<T> Grid2D<T> {
     }
 }
 
-impl Grid2D<char> {
-    pub fn from_str(input: &str) -> Self {
+impl FromStr for Grid2D<char> {
+    type Err = ();
+    fn from_str(input: &str) -> Result<Self, Self::Err> {
         let lines = input.lines();
 
         let width = lines.clone().next().unwrap().len() as i32;
@@ -180,11 +182,11 @@ impl Grid2D<char> {
                 data.push(c);
             }
         }
-        Self {
+        Ok(Self {
             width,
             height,
             data,
-        }
+        })
     }
 }
 impl<T: Display> Display for Grid2D<T> {
@@ -250,4 +252,78 @@ impl<'a, T> IntoIterator for &'a mut Grid2D<T> {
     fn into_iter(self) -> Self::IntoIter {
         self.data.iter_mut()
     }
+}
+
+pub struct AllPairsIter<I: Iterator + Clone> {
+    outer_val: Option<I::Item>,
+    outer: I,
+    inner: I,
+}
+pub trait AllPairs<I: Iterator + Clone> {
+    fn all_pairs(self) -> AllPairsIter<I>;
+}
+impl<I: Iterator + Clone> AllPairs<I> for I
+where
+    I::Item: Clone,
+{
+    fn all_pairs(self) -> AllPairsIter<I> {
+        let outer = self.clone();
+        let mut inner = self;
+        inner.next();
+
+        return AllPairsIter {
+            outer_val: None,
+            outer,
+            inner,
+        };
+    }
+}
+impl<I: Iterator + Clone> Iterator for AllPairsIter<I>
+where
+    I::Item: Clone,
+{
+    type Item = (I::Item, I::Item);
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.outer_val.is_none() {
+            self.outer_val = self.outer.next();
+        }
+        while let Some(outer) = &self.outer_val {
+            if let Some(inner) = self.inner.next() {
+                return Some((outer.clone(), inner));
+            }
+
+            self.outer_val = self.outer.next();
+            self.inner = self.outer.clone();
+        }
+        None
+    }
+}
+
+#[test]
+fn test_pairs() {
+    let a = [1];
+    let mut it = a.into_iter().all_pairs();
+    assert_eq!(it.next(), None);
+
+    let a = [1, 2];
+    let mut it = a.into_iter().all_pairs();
+    assert_eq!(it.next(), Some((1, 2)));
+    assert_eq!(it.next(), None);
+
+    let a = [1, 2, 3];
+    let mut it = a.into_iter().all_pairs();
+    assert_eq!(it.next(), Some((1, 2)));
+    assert_eq!(it.next(), Some((1, 3)));
+    assert_eq!(it.next(), Some((2, 3)));
+    assert_eq!(it.next(), None);
+
+    let a = [1, 2, 3, 4];
+    let mut it = a.into_iter().all_pairs();
+    assert_eq!(it.next(), Some((1, 2)));
+    assert_eq!(it.next(), Some((1, 3)));
+    assert_eq!(it.next(), Some((1, 4)));
+    assert_eq!(it.next(), Some((2, 3)));
+    assert_eq!(it.next(), Some((2, 4)));
+    assert_eq!(it.next(), Some((3, 4)));
+    assert_eq!(it.next(), None);
 }

@@ -7,6 +7,7 @@ mod day06;
 mod utils;
 mod vec;
 mod day07;
+mod day08;
 
 use std::{
     fmt::{Display, Write},
@@ -59,7 +60,8 @@ fn main() {
         //Box::new(day04::Day04),
         //Box::new(day05::Day05),
         //Box::new(day06::Day06),
-        Box::new(day07::Day07),
+        //Box::new(day07::Day07),
+        Box::new(day08::Day08),
     ];
 
     for sol in solutions {

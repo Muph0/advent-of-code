@@ -51,14 +51,14 @@ impl Solution for Day06 {
     }
 
     fn part_one(&self, input: &str) -> Answer {
-        let grid = Grid2D::from_str(input);
+        let grid: Grid2D<char> = input.parse().unwrap();
         let guard = get_guard_start(&grid);
         let (visited, _) = walk_guard(guard, &grid);
         visited.len().into()
     }
 
     fn part_two(&self, input: &str) -> Answer {
-        let mut grid = Grid2D::from_str(input);
+        let mut grid: Grid2D<char> = input.parse().unwrap();
         let guard = get_guard_start(&grid);
         let (visited, _) = walk_guard(guard, &grid);
         let mut sum = 0;
