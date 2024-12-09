@@ -8,6 +8,7 @@ mod utils;
 mod vec;
 mod day07;
 mod day08;
+mod day09;
 
 use std::{
     fmt::{Display, Write},
@@ -29,6 +30,11 @@ impl From<i32> for Answer {
 }
 impl From<usize> for Answer {
     fn from(value: usize) -> Self {
+        Self::Int(value as _)
+    }
+}
+impl From<u64> for Answer {
+    fn from(value: u64) -> Self {
         Self::Int(value as _)
     }
 }
@@ -61,7 +67,8 @@ fn main() {
         //Box::new(day05::Day05),
         //Box::new(day06::Day06),
         //Box::new(day07::Day07),
-        Box::new(day08::Day08),
+        //Box::new(day08::Day08),
+        Box::new(day09::Day09),
     ];
 
     for sol in solutions {
