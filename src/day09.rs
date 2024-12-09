@@ -108,98 +108,50 @@ impl Disk {
     }
 
     fn compact2(&mut self) {
-        let mut gaps = BTreeSet::new();
-        let mut files = Vec::new();
-        let mut cur_gap = 0;
-        let mut cur_file_len = 0;
-        let mut prev_id = Some(0);
+        let file_ids: BTreeSet<_> = self.blocks.iter().filter_map(|x| *x).collect();
 
-        for (i, id) in self.blocks.iter().chain([None].iter()).enumerate() {
-            if *id != prev_id && prev_id.is_some() {
-                files.push(File {
-                    id: prev_id.unwrap(),
-                    start: i - cur_file_len,
-                    len: cur_file_len,
-                });
-                cur_file_len = 0;
+        for id in file_ids.iter().rev() {
+            let file = self.find_file(*id);
+            let Some(gap) = self.first_fit(file.len) else {
+                continue;
+            };
+            if gap.start > file.start {
+                continue;
             }
 
-            if id.is_none() {
-                cur_gap += 1;
-            } else {
-                cur_file_len += 1;
-                if cur_gap != 0 {
-                    gaps.insert(Gap::new(cur_gap, i - cur_gap));
-                    cur_gap = 0;
-                }
-            }
-
-            prev_id = *id;
-        }
-
-        for file in files.iter().rev() {
-            //println!("file {file:?}");
-
-            // find smallest gaps that fit
-            let first_fit = gaps.range(Gap::new(file.len, 0)..);
-
-            // take the first one
-            match first_fit.filter(|g| g.start < file.start).next() {
-                Some(&gap) => {
-                    //println!("move to (len, start)={gap:?}");
-                    let ok = gaps.remove(&gap);
-                    assert!(ok);
-
-                    // moving file creates a gap
-                    let mut new_gap = file.to_gap();
-                    if let Some(gap_before) = self.find_gap(file.start - 1) {
-                        let ok = gaps.remove(&gap_before);
-                        assert!(ok);
-                        new_gap = new_gap.merge(gap_before);
-                    }
-                    if let Some(gap_after) = self.find_gap(file.start + file.len) {
-                        let ok = gaps.remove(&gap_after);
-                        assert!(ok);
-                        new_gap = new_gap.merge(gap_after);
-                    }
-                    gaps.insert(new_gap);
-
-                    for i in 0..file.len {
-                        let moved = self.blocks[file.start + i];
-                        assert_eq!(moved, Some(file.id));
-                        self.blocks[file.start + i] = None;
-                        self.blocks[gap.start + i] = moved;
-                    }
-
-                    if file.len < gap.len {
-                        // shrink the used gap
-                        gaps.insert(gap.offset_start(file.len));
-                    }
-                    //println!("moved: {}", self);
-                    //println!("gaps: {gaps:?}");
-                }
-                _ => (),
+            for i in 0..file.len {
+                self.blocks[file.start + i] = None;
+                self.blocks[gap.start + i] = Some(*id);
             }
         }
     }
 
-    fn find_gap(&self, i: usize) -> Option<Gap> {
-        match self.blocks.get(i) {
-            Some(Some(_)) => return None,
-            None => return None,
-            _ => (),
+    fn find_file(&self, id: u32) -> File {
+        let it = self.blocks.iter().enumerate();
+        let start = it.clone().find(|x| *x.1 == Some(id)).unwrap().0;
+        let end = it.skip(start).find(|x| *x.1 != Some(id)).unwrap_or((self.blocks.len(), &None)).0;
+        File {
+            id,
+            start,
+            len: end - start,
         }
-
-        let mut start = i;
-        while start > 0 && self.blocks[start - 1].is_none() {
-            start -= 1;
+    }
+    fn first_fit(&self, size: usize) -> Option<Gap> {
+        let mut len = 0;
+        for (i, id) in self.blocks.iter().enumerate() {
+            if id.is_none() {
+                len += 1;
+            } else {
+                if len >= size {
+                    return Some(Gap {
+                        start: i - len,
+                        len,
+                    });
+                }
+                len = 0;
+            }
         }
-        let mut end = i;
-        while end <= self.blocks.len() - 1 && self.blocks[end].is_none() {
-            end += 1;
-        }
-
-        Some(Gap::new(end - start, start))
+        None
     }
 }
 impl fmt::Display for Disk {
