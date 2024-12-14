@@ -1,13 +1,5 @@
-use multimap::MultiMap;
-
-use crate::utils::*;
-use crate::{vec::Vec2i, Answer, Solution};
-use std::collections::{BTreeMap, BTreeSet};
-use std::fmt::{self, write};
-use std::{
-    collections::{HashMap, HashSet},
-    str::FromStr,
-};
+use crate::{Answer, Solution};
+use std::{collections::BTreeSet, fmt};
 
 #[derive(Clone, Copy)]
 pub struct Day09;
@@ -129,7 +121,11 @@ impl Disk {
     fn find_file(&self, id: u32) -> File {
         let it = self.blocks.iter().enumerate();
         let start = it.clone().find(|x| *x.1 == Some(id)).unwrap().0;
-        let end = it.skip(start).find(|x| *x.1 != Some(id)).unwrap_or((self.blocks.len(), &None)).0;
+        let end = it
+            .skip(start)
+            .find(|x| *x.1 != Some(id))
+            .unwrap_or((self.blocks.len(), &None))
+            .0;
         File {
             id,
             start,

@@ -6,6 +6,8 @@ use std::ops::{Index, IndexMut};
 use std::slice::{Iter, IterMut};
 use std::str::FromStr;
 
+use crate::vec::Vec2i;
+
 pub trait DestructIterator<T> {
     fn destruct<const N: usize>(self) -> [T; N];
 }
@@ -73,6 +75,7 @@ impl<I: Iterator> Iterator for OptionIter<I> {
     }
 }
 
+#[derive(Clone)]
 pub struct Grid2D<T> {
     width: i32,
     height: i32,
@@ -132,6 +135,9 @@ impl<T> Grid2D<T> {
             let y = i as i32 / width;
             (x, y)
         })
+    }
+    pub fn iter_vec2(&self) -> impl Iterator<Item = Vec2i> {
+        self.iter_indices().map(|p| p.into())
     }
 
     pub fn map<R, F>(self, mut f: F) -> Grid2D<R>

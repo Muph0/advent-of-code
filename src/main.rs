@@ -1,14 +1,19 @@
+#![allow(unused)]
+
 mod day01;
 mod day02;
 mod day03;
 mod day04;
 mod day05;
 mod day06;
-mod utils;
-mod vec;
 mod day07;
 mod day08;
 mod day09;
+mod day10;
+mod day11;
+mod day12;
+mod utils;
+mod vec;
 
 use std::{
     fmt::{Display, Write},
@@ -68,7 +73,10 @@ fn main() {
         //Box::new(day06::Day06),
         //Box::new(day07::Day07),
         //Box::new(day08::Day08),
-        Box::new(day09::Day09),
+        //Box::new(day09::Day09),
+        //Box::new(day10::Day10),
+        //Box::new(day11::Day11),
+        Box::new(day12::Day12),
     ];
 
     for sol in solutions {
